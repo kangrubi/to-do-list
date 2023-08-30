@@ -1,35 +1,91 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+
+type Todo = {
+  id: number;
+  title: string;
+  completed: boolean;
+};
+
+interface TodoProps {
+  todo: Todo;
+  onToggle: () => void;
+  onRemove: (todo: Todo) => void;
+}
+
+const Todo = ({ todo, onToggle, onRemove }: TodoProps) => {
+  return (
+    <li>
+      <span>{todo.title}</span>
+      <input type="checkbox" checked={todo.completed} />
+      <button type="button">삭제</button>
+    </li>
+  );
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todos, setTodos] = useState<Todo[]>([
+    {
+      id: 0,
+      title: "1",
+      completed: false,
+    },
+    {
+      id: 1,
+      title: "2",
+      completed: false,
+    },
+    {
+      id: 2,
+      title: "3",
+      completed: false,
+    },
+  ]);
+  const [title, setTitle] = useState<string>("");
+
+  const createTodo = (title: string) => {
+    const todo: Todo = {
+      id: new Date().getTime(),
+      title: title,
+      completed: false,
+    };
+
+    return todo;
+  };
+
+  const addTodo = (todo: Todo) => {
+    setTodos([...todos, todo]);
+  };
+
+  const handleChangeTitleValue = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setTitle(event.target.value);
+  };
+
+  const handleClickAddButton = () => {
+    addTodo(createTodo(title));
+  };
 
   return (
     <>
+      <ul>
+        {todos.map((todo) => (
+          <Todo
+            key={JSON.stringify(todo)}
+            todo={todo}
+            onRemove={() => {}}
+            onToggle={() => {}}
+          />
+        ))}
+      </ul>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <input type="text" value={title} onChange={handleChangeTitleValue} />
+        <button type="button" onClick={handleClickAddButton}>
+          추가
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
