@@ -8,16 +8,30 @@ type Todo = {
 
 interface TodoProps {
   todo: Todo;
-  onToggle: () => void;
-  onRemove: (todo: Todo) => void;
+  onToggle: (todo: Todo) => void;
+  onRemove: (id: number) => void;
 }
 
 const Todo = ({ todo, onToggle, onRemove }: TodoProps) => {
+  const handleChangeCheckbox = () => {
+    onToggle(todo);
+  };
+
+  const handleClickRemoveButton = () => {
+    onRemove(todo.id);
+  };
+
   return (
     <li>
       <span>{todo.title}</span>
-      <input type="checkbox" checked={todo.completed} />
-      <button type="button">삭제</button>
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={handleChangeCheckbox}
+      />
+      <button type="button" onClick={handleClickRemoveButton}>
+        삭제
+      </button>
     </li>
   );
 };
@@ -66,6 +80,29 @@ function App() {
     addTodo(createTodo(title));
   };
 
+  const handleToggle = (todo: Todo) => {
+    const newTodoList = todos.map((v) => {
+      if (v.id === todo.id) {
+        return {
+          ...todo,
+          completed: !v.completed,
+        };
+      }
+      return v;
+    });
+
+    setTodos(newTodoList);
+  };
+
+  const handleRemove = (id: number) => {
+    const newTodoList = todos.filter((v) => {
+      if (v.id !== id) return true;
+      return false;
+    });
+
+    setTodos(newTodoList);
+  };
+
   return (
     <>
       <ul>
@@ -73,8 +110,8 @@ function App() {
           <Todo
             key={JSON.stringify(todo)}
             todo={todo}
-            onRemove={() => {}}
-            onToggle={() => {}}
+            onRemove={handleRemove}
+            onToggle={handleToggle}
           />
         ))}
       </ul>
