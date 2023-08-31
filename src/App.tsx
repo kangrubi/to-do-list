@@ -9,15 +9,17 @@ type Todo = {
 
 interface TodoProps {
   todo: Todo;
+  newTitle: string;
   onToggle: (todo: Todo) => void;
   onRemove: (id: number) => void;
   onEdit: (todo: Todo) => void;
-  onUpdate: (todo: Todo, event: React.ChangeEvent<HTMLInputElement>) => void;
+  onUpdate: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSave: (todo: Todo) => void;
 }
 
 const Todo = ({
   todo,
+  newTitle,
   onToggle,
   onRemove,
   onEdit,
@@ -39,7 +41,7 @@ const Todo = ({
   const handleChangeInputUpdate = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    onUpdate(todo, event);
+    onUpdate(event);
   };
 
   const handleClickSaveButton = () => {
@@ -57,7 +59,7 @@ const Todo = ({
         <>
           <input
             type="text"
-            value={todo.title}
+            value={newTitle}
             onChange={handleChangeInputUpdate}
           />
           <button type="button" onClick={handleClickSaveButton}>
@@ -102,6 +104,7 @@ function App() {
     },
   ]);
   const [title, setTitle] = useState<string>("");
+  const [newTitle, setNewTitle] = useState<string>("");
 
   const createTodo = (title: string) => {
     const todo: Todo = {
@@ -165,22 +168,8 @@ function App() {
     setTodos(newTodoList);
   };
 
-  const handleUpdate = (
-    todo: Todo,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newTodoList = todos.map((v) => {
-      if (v.id === todo.id) {
-        return {
-          ...todo,
-          title: event.target.value,
-        };
-      }
-
-      return v;
-    });
-
-    setTodos(newTodoList);
+  const handleUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTitle(event.target.value);
   };
 
   const handleSave = (todo: Todo) => {
@@ -188,6 +177,7 @@ function App() {
       if (v.id === todo.id) {
         return {
           ...todo,
+          title: newTitle,
           editing: !v.editing,
         };
       }
@@ -204,6 +194,7 @@ function App() {
           <Todo
             key={JSON.stringify(todo)}
             todo={todo}
+            newTitle={newTitle}
             onRemove={handleRemove}
             onToggle={handleToggle}
             onEdit={handleEditing}
