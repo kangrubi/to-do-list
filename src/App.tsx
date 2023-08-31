@@ -9,23 +9,15 @@ type Todo = {
 
 interface TodoProps {
   todo: Todo;
-  newTitle: string;
   onToggle: (todo: Todo) => void;
   onRemove: (id: number) => void;
   onEdit: (todo: Todo) => void;
-  onUpdate: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSave: (todo: Todo) => void;
+  onSave: (todo: Todo, newTitle: string) => void;
 }
 
-const Todo = ({
-  todo,
-  newTitle,
-  onToggle,
-  onRemove,
-  onEdit,
-  onUpdate,
-  onSave,
-}: TodoProps) => {
+const Todo = ({ todo, onToggle, onRemove, onEdit, onSave }: TodoProps) => {
+  const [title, setTitle] = useState<string>(todo.title);
+
   const handleChangeCheckbox = () => {
     onToggle(todo);
   };
@@ -41,11 +33,11 @@ const Todo = ({
   const handleChangeInputUpdate = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    onUpdate(event);
+    setTitle(event.target.value);
   };
 
   const handleClickSaveButton = () => {
-    onSave(todo);
+    onSave(todo, title);
   };
 
   return (
@@ -57,18 +49,14 @@ const Todo = ({
       />
       {todo.editing ? (
         <>
-          <input
-            type="text"
-            value={newTitle}
-            onChange={handleChangeInputUpdate}
-          />
+          <input type="text" value={title} onChange={handleChangeInputUpdate} />
           <button type="button" onClick={handleClickSaveButton}>
             저장
           </button>
         </>
       ) : (
         <>
-          <span>{todo.title}</span>
+          <span>{title}</span>
           <button type="button" onClick={handleClickEditButton}>
             수정
           </button>
@@ -104,7 +92,6 @@ function App() {
     },
   ]);
   const [title, setTitle] = useState<string>("");
-  const [newTitle, setNewTitle] = useState<string>("");
 
   const createTodo = (title: string) => {
     const todo: Todo = {
@@ -168,11 +155,7 @@ function App() {
     setTodos(newTodoList);
   };
 
-  const handleUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTitle(event.target.value);
-  };
-
-  const handleSave = (todo: Todo) => {
+  const handleSave = (todo: Todo, newTitle: string) => {
     const newTodoList = todos.map((v) => {
       if (v.id === todo.id) {
         return {
@@ -194,11 +177,9 @@ function App() {
           <Todo
             key={JSON.stringify(todo)}
             todo={todo}
-            newTitle={newTitle}
             onRemove={handleRemove}
             onToggle={handleToggle}
             onEdit={handleEditing}
-            onUpdate={handleUpdate}
             onSave={handleSave}
           />
         ))}
